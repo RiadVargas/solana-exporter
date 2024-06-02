@@ -70,3 +70,4 @@ docker run -d --name solana-exporter -p 8888:8888 ghcr.io/riadvargas/solana-expo
 - [ ] Add a Grafana dashboard template
 - [ ] New metric: cluster average vote credits
 - [ ] New metric: skipped slots
+- [ ] Optimize once per epoch calculations
