@@ -13,7 +13,7 @@ The Solana Validator Prometheus Exporter is a tool designed to monitor and analy
     - [Configuration](#configuration)
         - [Arguments](#arguments)
         - [Options](#options)
-        - [Sample command](#sample-command)
+        - [Complete command](#complete-command)
     - [Planned development](#planned-development)
 
 <!-- /TOC -->
@@ -25,7 +25,7 @@ The Solana Validator Prometheus Exporter is a tool designed to monitor and analy
 The easiest way to deploy this Solana exporter is using Docker: 
 
 ```
-docker run -d --name solana-exporter -p 8888:8888 ghcr.io/riadvargas/solana-exporter <vote-account>
+docker run -d --name solana-exporter --restart=on-failure -p 8888:8888 ghcr.io/riadvargas/solana-exporter <vote-account>
 ```
 
 Replace `<vote-account>` with your validator vote account public address.
