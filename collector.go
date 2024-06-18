@@ -62,15 +62,41 @@ func (m Metrics) RegisterVoteAccount(rpcUrl string, currentEpoch string, voteAcc
 	m.identityBalance.With(labels).Set(float64(balance.Result.Value))
 }
 
+func (m Metrics) RegisterVoteAccounts(currentEpoch string, voteAccounts []types.VoteAccount) {
+	labels := prometheus.Labels{"epoch": currentEpoch}
+
+	var clusterTotalCredits int
+	var eligibleValidators int
+	for _, v := range voteAccounts {
+		if len(v.EpochCredits) > 0 {
+			epochCredit := v.EpochCredits[len(v.EpochCredits)-1]
+			creditEpoch := strconv.Itoa(epochCredit[0])
+
+			if creditEpoch == currentEpoch {
+				currentCredits := epochCredit[1]
+				previousCredits := epochCredit[2]
+				gainedCredits := (currentCredits - previousCredits)
+
+				clusterTotalCredits += gainedCredits
+				eligibleValidators++
+			}
+		}
+	}
+
+	averageCredits := (clusterTotalCredits / eligibleValidators)
+
+	m.averageCredits.With(labels).Set(float64(averageCredits))
+}
+
 func (m Metrics) CollectMetrics(rpcUrl string, voteKey string) {
 	log.Info().Msg("starting a new collection job")
 
 	epochInfo := GetEpochInfo(rpcUrl)
 	currentEpoch := fmt.Sprintf("%d", epochInfo.Result.Epoch)
 
-	voteAccountsResponse := GetVoteAccounts(rpcUrl, voteKey)
+	voteAccountResponse := GetVoteAccount(rpcUrl, voteKey)
 
-	for _, voteAccount := range append(voteAccountsResponse.Result.Current, voteAccountsResponse.Result.Delinquent...) {
+	for _, voteAccount := range append(voteAccountResponse.Result.Current, voteAccountResponse.Result.Delinquent...) {
 		go m.RegisterVoteAccount(rpcUrl, currentEpoch, voteAccount, types.VALIDATOR_ACTIVE)
 
 		// @TODO: run just once per epoch
@@ -78,6 +104,10 @@ func (m Metrics) CollectMetrics(rpcUrl string, voteKey string) {
 		go m.RegisterPendingStake(rpcUrl, currentEpoch, voteAccount)
 		// --- @TODO: run just once per epoch
 	}
+
+	voteAccountsResponse := GetVoteAccounts(rpcUrl)
+
+	go m.RegisterVoteAccounts(currentEpoch, append(voteAccountsResponse.Result.Current, voteAccountsResponse.Result.Delinquent...))
 
 	m.currentSlot.With(prometheus.Labels{"epoch": currentEpoch}).Set(float64(epochInfo.Result.AbsoluteSlot))
 }

@@ -77,6 +77,10 @@ func main() {
 			Name: "solana_validator_delinquent",
 			Help: "Binary metric that states if a vote account is delinquent",
 		}, []string{"epoch", "identity", "vote_key"}),
+		averageCredits: promauto.NewGaugeVec(prometheus.GaugeOpts{
+			Name: "solana_cluster_average_credits",
+			Help: "Average validator credits across the cruster",
+		}, []string{"epoch"}),
 	}
 
 	collectorTicker := time.NewTicker(time.Duration(*scrapeInterval) * time.Second)

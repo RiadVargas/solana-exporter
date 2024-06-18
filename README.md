@@ -111,6 +111,10 @@ docker run -d --name solana-exporter -p 8888:8888 ghcr.io/riadvargas/solana-expo
   - **Labels**: `epoch` (The epoch number), `identity` (The identity of the validator), `vote_key` (The vote account key)
   - **Description**: Binary metric that states if a vote account is delinquent
 
+- **solana_cluster_average_credits**
+  - **Labels**: `epoch` (The epoch number)
+  - **Description**: Average validator credits across the cruster
+
 ## Planned development
 - [ ] Unit test metrics calculation
 - [ ] Add a Grafana dashboard template
