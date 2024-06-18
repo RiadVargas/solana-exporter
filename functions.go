@@ -75,7 +75,7 @@ func GetBalance(rpcUrl string, identity string) types.GetBalance {
 	return resp
 }
 
-func GetVoteAccounts(rpcUrl string, voteKey string) types.GetVoteAccounts {
+func GetVoteAccount(rpcUrl string, voteKey string) types.GetVoteAccounts {
 	payload := &Request{
 		ID:     1,
 		Method: "getVoteAccounts",
@@ -84,6 +84,27 @@ func GetVoteAccounts(rpcUrl string, voteKey string) types.GetVoteAccounts {
 				VotePubKey: voteKey,
 			},
 		},
+		Version: "2.0",
+	}
+
+	body, err := request(rpcUrl, payload)
+	if err != nil {
+		panic(err)
+	}
+
+	var resp types.GetVoteAccounts
+	if err = json.Unmarshal(body, &resp); err != nil {
+		log.Fatal().Err(err)
+	}
+
+	return resp
+}
+
+func GetVoteAccounts(rpcUrl string) types.GetVoteAccounts {
+	payload := &Request{
+		ID:      1,
+		Method:  "getVoteAccounts",
+		Params:  []interface{}{},
 		Version: "2.0",
 	}
 

@@ -16,4 +16,5 @@ type Metrics struct {
 	activeStake     *prometheus.GaugeVec
 	pendingStake    *prometheus.GaugeVec
 	delinquent      *prometheus.GaugeVec
+	averageCredits  *prometheus.GaugeVec
 }
